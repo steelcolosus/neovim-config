@@ -1,3 +1,12 @@
+local function get_python_venv_name()
+    local venv_path = os.getenv("VIRTUAL_ENV")
+    if venv_path then
+        return venv_path:match("([^/]+)$")
+    else
+        return nil
+    end
+end
+
 return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons", "AndreM222/copilot-lualine" },
@@ -60,6 +69,22 @@ return {
                         lazy_status.updates,
                         cond = lazy_status.has_updates,
                         color = { fg = "#ff9e64" },
+                    },
+                    {
+                        function()
+                            local venv_name = get_python_venv_name()
+                            if venv_name then
+                                return string.format("🐍 %s", venv_name)
+                            end
+                        end,
+                        cond = function()
+                            return vim.bo.filetype == "python"
+                        end,
+                        color = { fg = "#ff9e64" },
+                    },
+                    {
+                        "filename",
+                        path = 1,
                     },
                     { "copilot" },
                     { "encoding" },
