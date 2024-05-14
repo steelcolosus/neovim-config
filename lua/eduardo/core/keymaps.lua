@@ -25,3 +25,7 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 
 -- select all text in buffer usinc ctrl + a
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all text in buffer" })
+
+-- use Tab to move to next tab and Shift+Tab to move to previous tab
+keymap.set("n", "<Tab>", "<cmd>tabnext<CR>", { desc = "Move to next tab" })
+keymap.set("n", "<S-Tab>", "<cmd>tabprevious<CR>", { desc = "Move to previous tab" })
