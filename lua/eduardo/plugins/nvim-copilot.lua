@@ -1,7 +1,8 @@
 return {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
-    build = ":Copilot auth",
+    --build = ":Copilot auth",
+    event = "InsertEnter",
     opts = {
         suggestion = { enabled = false },
         panel = { enabled = false },
