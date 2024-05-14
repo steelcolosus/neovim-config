@@ -35,6 +35,8 @@ return {
                 "lua_ls",
                 "graphql",
                 "emmet_ls",
+                "prismals",
+                "pyright",
             },
         })
 
@@ -44,7 +46,9 @@ return {
                 "stylua", -- lua formatter
                 "isort", -- python formatter
                 "black", -- python formatter
-                "pylint",
+                "flake8",
+                "debugpy",
+                "mypy",
                 "eslint_d",
             },
         })

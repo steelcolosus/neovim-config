@@ -12,7 +12,6 @@ opt.autoindent = true
 
 opt.wrap = false
 
-
 opt.ignorecase = true
 opt.smartcase = true
 
@@ -30,5 +29,3 @@ opt.clipboard:append("unnamedplus") -- use system clipboard as default register
 -- split windows
 opt.splitright = true
 opt.splitbelow = true
-
-
