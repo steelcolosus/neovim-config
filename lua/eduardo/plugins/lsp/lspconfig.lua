@@ -22,30 +22,6 @@ return {
 
         local path = util.path
 
-        local function get_python_path(workspace)
-            if vim.fn.executable("pyenv") == 1 then
-                local pyenv_version = vim.fn.trim(vim.fn.system("pyenv version-name"))
-                if pyenv_version ~= "" then
-                    return vim.fn.trim(vim.fn.system("pyenv which python"))
-                end
-            end
-
-            -- Use activated virtualenv.
-            if vim.env.VIRTUAL_ENV then
-                return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
-            end
-
-            -- Find and use virtualenv from pipenv in workspace directory.
-            local match = vim.fn.glob(path.join(workspace, "Pipfile"))
-            if match ~= "" then
-                local venv = vim.fn.trim(vim.fn.system("PIPENV_PIPFILE=" .. match .. " pipenv --venv"))
-                return path.join(venv, "bin", "python")
-            end
-
-            -- Fallback to system Python.
-            return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
-        end
-
         vim.api.nvim_create_autocmd("LspAttach", {
             group = vim.api.nvim_create_augroup("UserLspConfig", {}),
             callback = function(ev)
