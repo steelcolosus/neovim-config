@@ -28,45 +28,12 @@ Before installing the plugins, ensure the following dependencies are installed o
   brew install ripgrep
   ```
 
-#### LSP and Autocompletion
+#### Venv Selector
 
-- **lspconfig**: Neovim LSP configuration.
-- **mason**: Easy installation of LSP servers.
-- **nvim-cmp**: Autocompletion plugin.
-- **nvim-lspconfig**: Collection of configurations for built-in LSP.
-
-#### Debugging
-
-- **nvim-dap**: Debug Adapter Protocol client.
-- **nvim-dap-python**: Python debugging.
-- **nvim-dap-ui**: UI for `nvim-dap`.
-
-#### Git Integration
-
-- **gitsigns.nvim**: Git integration.
-
-#### Tree-sitter
-
-- **nvim-treesitter**: Treesitter configurations and abstraction layer.
-
-#### Additional Plugins
-
-- **telescope.nvim**: Fuzzy finder and more.
-- **nvim-tree.lua**: File explorer.
-- **nvim-autopairs**: Autopairs for brackets, quotes, etc.
-- **bufferline.nvim**: Bufferline.
-- **lualine.nvim**: Statusline.
-- **indent-blankline.nvim**: Adds indentation guides to all lines.
-- **todo-comments.nvim**: Highlight and search for TODO comments.
-- **which-key.nvim**: Displays a popup with possible keybindings.
-- **alpha-nvim**: Greeter dashboard.
-- **auto-session**: A small automated session manager.
-- **vim-maximizer**: Maximizes and restores the current window.
-- **nvim-surround**: Surround text objects.
-- **nvim-substitute**: Enhanced substitute commands.
-- **dressing.nvim**: Improves default vim.ui interfaces.
-- **trouble.nvim**: Pretty list for showing diagnostics, references, telescope results, etc.
-- **nvim-copilot**: GitHub Copilot integration.
+- **fd**: to find entries on your filesystem [repo](https://github.com/sharkdp/fd)
+  ```bash
+  brew install fd
+  ```
 
 ## Installation
 
