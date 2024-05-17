@@ -68,6 +68,10 @@ return {
 
                 opts.desc = "Restart LSP"
                 keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+
+                -- typescript specific mappings
+                opts.desc = "Organize imports"
+                keymap.set("n", "<leader>co", vim.lsp.buf.code_action, opts) -- organize imports
             end,
         })
 
@@ -142,6 +146,48 @@ return {
                             },
                         },
                     },
+                })
+            end,
+            ["tsserver"] = function()
+                lspconfig["tsserver"].setup({
+                    capabilities = capabilities,
+                    on_attach = function(client, bufnr)
+                        -- set keybinds for typescript
+                        client.server_capabilities.documentFormattingProvider = false
+                        local opts = { buffer = bufnr, silent = true }
+                        opts.desc = "Organize imports"
+                        keymap.set("n", "<leader>co", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.organizeImports.ts" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- organize imports
+
+                        opts.desc = "Remove Unused Imports"
+                        keymap.set("n", "<leader>cR", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.removeUnused.ts" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- remove unused imports
+
+                        opts.desc = "Add missing Imports"
+                        keymap.set("n", "<leader>cA", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.addMissingImports.ts" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- add missing imports
+                    end,
                 })
             end,
         })
