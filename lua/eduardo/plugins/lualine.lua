@@ -16,7 +16,7 @@ return {
 
         local colors = {
             blue = "#65D1FF",
-            green = "#3EFFDC",
+            green = "#97e346",
             violet = "#FF61EF",
             yellow = "#FFDA7B",
             red = "#FF4A4A",
@@ -27,12 +27,12 @@ return {
 
         local my_lualine_theme = {
             normal = {
-                a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
+                a = { bg = colors.green, fg = colors.bg, gui = "bold" },
                 b = { bg = colors.bg, fg = colors.fg },
                 c = { bg = colors.bg, fg = colors.fg },
             },
             insert = {
-                a = { bg = colors.green, fg = colors.bg, gui = "bold" },
+                a = { bg = colors.yellow, fg = colors.bg, gui = "bold" },
                 b = { bg = colors.bg, fg = colors.fg },
                 c = { bg = colors.bg, fg = colors.fg },
             },
@@ -42,7 +42,7 @@ return {
                 c = { bg = colors.bg, fg = colors.fg },
             },
             command = {
-                a = { bg = colors.yellow, fg = colors.bg, gui = "bold" },
+                a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
                 b = { bg = colors.bg, fg = colors.fg },
                 c = { bg = colors.bg, fg = colors.fg },
             },
