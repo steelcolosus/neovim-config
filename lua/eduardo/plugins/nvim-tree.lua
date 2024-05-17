@@ -36,10 +36,11 @@ return {
                         enable = false,
                     },
                     quit_on_open = true,
+                    -- open file in a new tab
                 },
             },
             filters = {
-                dotfiles = true,
+                dotfiles = false,
                 custom = { ".DS_Store", "node_modules/.*" },
             },
             git = {
