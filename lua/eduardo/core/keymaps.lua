@@ -29,3 +29,6 @@ keymap.set("n", "<C-a>", "ggVG", { desc = "Select all text in buffer" })
 -- use Tab to move to next tab and Shift+Tab to move to previous tab
 keymap.set("n", "<Tab>", "<cmd>tabnext<CR>", { desc = "Move to next tab" })
 keymap.set("n", "<S-Tab>", "<cmd>tabprevious<CR>", { desc = "Move to previous tab" })
+
+-- Quick save with <leader><leader>s
+keymap.set("n", "<leader><leader>s", "<cmd>w<CR>", { desc = "Quick save" })
