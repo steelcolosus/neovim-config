@@ -64,7 +64,7 @@ return {
                 keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
 
                 opts.desc = "Show documentation for what is under cursor"
-                keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
+                keymap.set("n", "I", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
 
                 opts.desc = "Restart LSP"
                 keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
@@ -151,6 +151,12 @@ return {
             ["tsserver"] = function()
                 lspconfig["tsserver"].setup({
                     capabilities = capabilities,
+                    init_options = {
+                        preferences = {
+                            importModuleSpecifierPreference = "relative",
+                            importModuleSpecifierEnding = "minimal",
+                        },
+                    },
                     on_attach = function(client, bufnr)
                         -- set keybinds for typescript
                         client.server_capabilities.documentFormattingProvider = false
