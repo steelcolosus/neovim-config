@@ -1,6 +1,6 @@
 return {
     "mfussenegger/nvim-lint",
-    enabled = false,
+    -- enabled = false,
     event = { "BufReadPre", "BufNewFile" },
     config = function()
         local lint = require("lint")
@@ -27,4 +27,5 @@ return {
             lint.try_lint()
         end, { desc = "Trigger linting for current file" })
     end,
+    condition = function() end,
 }
