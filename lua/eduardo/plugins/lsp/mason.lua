@@ -50,6 +50,7 @@ return {
                 "debugpy",
                 "mypy",
                 "eslint_d",
+                "pylint",
             },
         })
     end,
