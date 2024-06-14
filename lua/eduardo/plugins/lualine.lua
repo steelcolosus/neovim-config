@@ -76,7 +76,7 @@ return {
                             if venv_name then
                                 return string.format("🐍 %s", venv_name)
                             end
-                            return nil
+                            return "system"
                         end,
                         cond = function()
                             return vim.bo.filetype == "python"

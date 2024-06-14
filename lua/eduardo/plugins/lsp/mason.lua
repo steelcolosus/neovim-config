@@ -36,6 +36,7 @@ return {
                 "graphql",
                 "emmet_ls",
                 "prismals",
+                "pyright",
             },
         })
 
@@ -49,6 +50,7 @@ return {
                 "debugpy",
                 "mypy",
                 "eslint_d",
+                "pylint",
             },
         })
     end,

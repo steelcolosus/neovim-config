@@ -1,5 +1,6 @@
 return {
     "mfussenegger/nvim-lint",
+    -- enabled = false,
     event = { "BufReadPre", "BufNewFile" },
     config = function()
         local lint = require("lint")
@@ -10,7 +11,7 @@ return {
             javascriptreact = { "eslint_d" },
             typescriptreact = { "eslint_d" },
             svelte = { "eslint_d" },
-            --python = { "pylint" },
+            python = { "pylint" },
         }
 
         local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
@@ -25,5 +26,9 @@ return {
         vim.keymap.set("n", "<leader><leader>l", function()
             lint.try_lint()
         end, { desc = "Trigger linting for current file" })
+
+        lint.linters.pylint.cmd = "python"
+        lint.linters.pylint.args = { "-m", "pyling", "-f", "json" }
     end,
+    condition = function() end,
 }

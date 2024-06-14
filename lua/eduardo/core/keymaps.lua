@@ -32,3 +32,9 @@ keymap.set("n", "<S-Tab>", "<cmd>tabprevious<CR>", { desc = "Move to previous ta
 
 -- Quick save with <leader><leader>s
 keymap.set("n", "<leader><leader>s", "<cmd>w<CR>", { desc = "Quick save" })
+
+-- Move selected line / block of text in visual mode
+keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+keymap.set("n", "J", ":m .+1<CR>==")
+keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+keymap.set("n", "K", ":m .-2<CR>==")
