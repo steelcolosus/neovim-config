@@ -4,7 +4,7 @@ return {
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
         { "antosha417/nvim-lsp-file-operations", config = true },
-        { "folke/neodev.nvim", opts = {} },
+        { "folke/neodev.nvim",                   opts = {} },
     },
     config = function()
         -- import lspconfig plugin
@@ -196,6 +196,43 @@ return {
                     end,
                 })
             end,
+            ["yamlls"] = function()
+                lspconfig["yamlls"].setup({
+                    capabilities = capabilities,
+                    settings = {
+                        yaml = {
+                            format = {
+                                enable = true,
+                                singleQuote = true,
+                                bracketSpacing = false,
+                            },
+                            hover = true,
+                            completion = true,
+                            customTags = {
+                                "!Base64 scalar",
+                                "!Cidr scalar",
+                                "!And sequence",
+                                "!Equals sequence",
+                                "!If sequence",
+                                "!Not sequence",
+                                "!Or sequence",
+                                "!Condition scalar",
+                                "!FindInMap sequence",
+                                "!GetAtt scalar",
+                                "!GetAtt sequence",
+                                "!GetAZs scalar",
+                                "!ImportValue scalar",
+                                "!Join sequence",
+                                "!Select sequence",
+                                "!Split sequence",
+                                "!Sub scalar",
+                                "!Transform mapping",
+                                "!Ref scalar",
+                            },
+                        },
+                    },
+                })
+            end
         })
     end,
 }
