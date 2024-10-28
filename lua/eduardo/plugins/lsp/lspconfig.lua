@@ -4,7 +4,7 @@ return {
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
         { "antosha417/nvim-lsp-file-operations", config = true },
-        { "folke/neodev.nvim",                   opts = {} },
+        { "folke/neodev.nvim", opts = {} },
     },
     config = function()
         -- import lspconfig plugin
@@ -149,7 +149,7 @@ return {
                 })
             end,
             ["tsserver"] = function()
-                lspconfig["tsserver"].setup({
+                lspconfig["ts_ls"].setup({
                     capabilities = capabilities,
                     init_options = {
                         preferences = {
@@ -232,7 +232,7 @@ return {
                         },
                     },
                 })
-            end
+            end,
         })
     end,
 }
