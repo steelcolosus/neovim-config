@@ -16,6 +16,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     { import = "eduardo.plugins" },
     { import = "eduardo.plugins.lsp" },
+    { import = "eduardo.plugins.themes" },
 }, {
     checker = {
         enabled = true,
