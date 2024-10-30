@@ -148,6 +148,56 @@ return {
                     },
                 })
             end,
+            ["pyright"] = function()
+                lspconfig["pyright"].setup({
+                    capabilities = capabilities,
+                    settings = {
+                        python = {
+                            analysis = {
+                                autoSearchPaths = true,
+                                useLibraryCodeForTypes = true,
+                            },
+                        },
+                    },
+                    on_attach = function(client, bufnr)
+                        -- set keybinds for python
+                        client.server_capabilities.documentFormattingProvider = false
+                        local opts = { buffer = bufnr, silent = true }
+                        opts.desc = "Organize imports"
+                        keymap.set("n", "<leader>co", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.organizeImports.python" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- organize imports
+
+                        opts.desc = "Remove Unused Imports"
+                        keymap.set("n", "<leader>cR", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.removeUnused.python" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- remove unused imports
+
+                        opts.desc = "Add missing Imports"
+                        keymap.set("n", "<leader>cA", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.addMissingImports.python" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- add missing imports
+                    end,
+                })
+            end,
             ["ts_ls"] = function()
                 lspconfig["ts_ls"].setup({
                     capabilities = capabilities,
