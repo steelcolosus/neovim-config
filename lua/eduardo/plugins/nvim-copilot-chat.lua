@@ -33,6 +33,12 @@ return {
                 end,
             } ]]
 
+            opts.mappings = {
+                complete = {
+                    insert = "",
+                },
+            }
+
             chat.setup(opts)
 
             vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
@@ -87,7 +93,7 @@ return {
             -- Chat with Copilot in visual mode
             {
                 "<leader>ccv",
-                ":CopilotChatVisual",
+                ":CopilotChatVisual<cr>",
                 mode = "x",
                 desc = "CopilotChat - Open in vertical split",
             },
