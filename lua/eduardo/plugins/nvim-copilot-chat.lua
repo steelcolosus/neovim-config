@@ -1,7 +1,7 @@
 return {
     {
         "CopilotC-Nvim/CopilotChat.nvim",
-        branch = "canary",
+        branch = "main",
         dependencies = {
             { "github/copilot.vim" }, -- or github/copilot.vim
             { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
@@ -93,13 +93,13 @@ return {
             -- Chat with Copilot in visual mode
             {
                 "<leader>ccv",
-                "<cmd>CopilotChatVisual",
+                "<cmd>CopilotChatVisual<cr>",
                 mode = "x",
                 desc = "CopilotChat - Open in vertical split",
             },
             {
                 "<leader>ccx",
-                "<cmd>CopilotChatInline",
+                "<cmd>CopilotChatInline<cr>",
                 mode = "x",
                 desc = "CopilotChat - Inline chat",
             },

@@ -156,6 +156,7 @@ return {
                             analysis = {
                                 autoSearchPaths = true,
                                 useLibraryCodeForTypes = true,
+                                autoImportCompletions = true, -- Add this line to enable auto import completions
                             },
                         },
                     },
@@ -168,7 +169,7 @@ return {
                             vim.lsp.buf.code_action({
                                 apply = true,
                                 context = {
-                                    only = { "source.organizeImports.python" },
+                                    only = { "source.organizeImports" },
                                     diagnostics = {},
                                 },
                             })
@@ -178,7 +179,7 @@ return {
                             vim.lsp.buf.code_action({
                                 apply = true,
                                 context = {
-                                    only = { "source.removeUnused.python" },
+                                    only = { "source.removeUnused" },
                                     diagnostics = {},
                                 },
                             })
@@ -188,7 +189,7 @@ return {
                             vim.lsp.buf.code_action({
                                 apply = true,
                                 context = {
-                                    only = { "source.addMissingImports.python" },
+                                    only = { "source.addMissingImports" },
                                     diagnostics = {},
                                 },
                             })
