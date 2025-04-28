@@ -25,6 +25,14 @@ return {
 
         telescope.setup({
             defaults = {
+                file_ignore_patterns = {
+                    "node_modules",
+                    "dist",
+                    ".git/",
+                    "%.lock",
+                    "yarn.lock",
+                    "package%-lock%.json",
+                },
                 path_display = { "smart" },
                 mappings = {
                     i = {

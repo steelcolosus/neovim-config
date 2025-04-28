@@ -35,3 +35,4 @@ opt.splitbelow = true
 opt.foldlevel = 99
 opt.foldmethod = "expr"
 opt.foldexpr = "nvim_treesitter#foldexpr()"
+opt.completeopt = { "menu", "menuone", "noselect", "popup" }

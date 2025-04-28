@@ -2,18 +2,17 @@ return {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
-        "hrsh7th/cmp-buffer", -- source for text in buffer
-        "hrsh7th/cmp-path", -- source for file system paths
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
         {
             "L3MON4D3/LuaSnip",
-            -- follow latest release.
-            version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-            -- install jsregexp (optional!).
+            version = "v3.*",
             build = "make install_jsregexp",
         },
-        "saadparwaiz1/cmp_luasnip", -- for autocompletion
-        "rafamadriz/friendly-snippets", -- useful snippets
-        "onsails/lspkind.nvim", -- vs-code like pictograms
+        "saadparwaiz1/cmp_luasnip",
+        "rafamadriz/friendly-snippets",
+        "onsails/lspkind.nvim",
     },
 
     config = function()
@@ -32,6 +31,14 @@ return {
         -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
         require("luasnip.loaders.from_vscode").lazy_load()
 
+        --[[ cmp.event:on("menu_opened", function()
+            vim.b.copilot_suggestion_hidden = true
+        end)
+
+        cmp.event:on("menu_closed", function()
+            vim.b.copilot_suggestion_hidden = false
+        end) ]]
+
         cmp.setup({
             completion = {
                 completeopt = "menu,menuone,preview,noselect",
@@ -44,24 +51,25 @@ return {
             mapping = cmp.mapping.preset.insert({
                 ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
                 ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
-                ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                ["<C-f>"] = cmp.mapping.scroll_docs(4),
+                ["<C-b>"] = cmp.mapping.scroll_docs(-3),
+                ["<C-f>"] = cmp.mapping.scroll_docs(5),
                 ["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
                 ["<C-e>"] = cmp.mapping.abort(), -- close completion window
                 ["<CR>"] = cmp.mapping.confirm({ select = false }),
             }),
             -- sources for autocompletion
             sources = cmp.config.sources({
-                { name = "copilot", group_index = 1, priority = 1 }, -- copilot
-                { name = "nvim_lsp", group_index = 2 },
-                { name = "luasnip", group_index = 2 }, -- snippets
-                { name = "buffer", group_index = 2 }, -- text within current buffer
-                { name = "path", group_index = 2 }, -- file system paths
+                { name = "copilot", group_index = 1, priority = 100 }, -- copilot
+                { name = "nvim_lsp" }, -- lsp
+                { name = "luasnip" }, -- snippets
+                { name = "buffer" }, -- text within current buffer
+                { name = "path" }, -- file system paths
+                { name = "render-markdown" },
             }),
             -- configure lspkind for vs-code like pictograms in completion menu
             formatting = {
                 format = lspkind.cmp_format({
-                    maxwidth = 50,
+                    maxwidth = 51,
                     ellipsis_char = "...",
                     mode = "symbol",
                     symbol_map = { Copilot = "" },

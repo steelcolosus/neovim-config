@@ -68,10 +68,6 @@ return {
 
                 opts.desc = "Restart LSP"
                 keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
-
-                -- typescript specific mappings
-                opts.desc = "Organize imports"
-                keymap.set("n", "<leader>co", vim.lsp.buf.code_action, opts) -- organize imports
             end,
         })
 
@@ -155,47 +151,11 @@ return {
                         python = {
                             analysis = {
                                 autoSearchPaths = true,
+                                diagnosticMode = "openFilesOnly",
                                 useLibraryCodeForTypes = true,
                             },
                         },
                     },
-                    on_attach = function(client, bufnr)
-                        -- set keybinds for python
-                        client.server_capabilities.documentFormattingProvider = false
-                        local opts = { buffer = bufnr, silent = true }
-                        opts.desc = "Organize imports"
-                        keymap.set("n", "<leader>co", function()
-                            vim.lsp.buf.code_action({
-                                apply = true,
-                                context = {
-                                    only = { "source.organizeImports.python" },
-                                    diagnostics = {},
-                                },
-                            })
-                        end, opts) -- organize imports
-
-                        opts.desc = "Remove Unused Imports"
-                        keymap.set("n", "<leader>cR", function()
-                            vim.lsp.buf.code_action({
-                                apply = true,
-                                context = {
-                                    only = { "source.removeUnused.python" },
-                                    diagnostics = {},
-                                },
-                            })
-                        end, opts) -- remove unused imports
-
-                        opts.desc = "Add missing Imports"
-                        keymap.set("n", "<leader>cA", function()
-                            vim.lsp.buf.code_action({
-                                apply = true,
-                                context = {
-                                    only = { "source.addMissingImports.python" },
-                                    diagnostics = {},
-                                },
-                            })
-                        end, opts) -- add missing imports
-                    end,
                 })
             end,
             ["ts_ls"] = function()
@@ -216,7 +176,7 @@ return {
                             vim.lsp.buf.code_action({
                                 apply = true,
                                 context = {
-                                    only = { "source.organizeImports.ts" },
+                                    only = { "source.organizeImports" },
                                     diagnostics = {},
                                 },
                             })
@@ -243,6 +203,17 @@ return {
                                 },
                             })
                         end, opts) -- add missing imports
+
+                        opts.desc = "Fix all diagnostics"
+                        keymap.set("n", "<leader>cf", function()
+                            vim.lsp.buf.code_action({
+                                apply = true,
+                                context = {
+                                    only = { "source.fixAll.ts" },
+                                    diagnostics = {},
+                                },
+                            })
+                        end, opts) -- fix all diagnostics
                     end,
                 })
             end,

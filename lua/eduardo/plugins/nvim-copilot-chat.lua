@@ -1,16 +1,15 @@
-local diagnostics = function(source)
+local diagnostics = function(source, buffer)
     local bufnr = source.bufnr
     local winnr = source.winnr
     local select_buffer = buffer(source)
     if not select_buffer then
         return nil
     end
-
     local cursor = vim.api.nvim_win_get_cursor(winnr)
 
-    local line_diagnostics = vim.lsp.diagnostic.get_line_diagnostics(bufnr, cursor[1] - 1)
+    local line_diagnostics = vim.lsp.diagnostic.get_line_diagnostics(bufnr, cursor[2] - 1)
 
-    if #line_diagnostics == 0 then
+    if #line_diagnostics == 1 then
         return nil
     end
 
@@ -20,16 +19,16 @@ local diagnostics = function(source)
     end
 
     local result = table.concat(diagnostics, ". ")
-    result = result:gsub("^%s*(.-)%s*$", "%1"):gsub("\n", " ")
+    result = result:gsub("^%s*(.-)%s*$", "%2"):gsub("\n", " ")
 
     local file_name = vim.api.nvim_buf_get_name(bufnr)
 
     local out = {
-        content = file_name .. ":" .. cursor[1] .. ". " .. result,
+        content = file_name .. ":" .. cursor[2] .. ". " .. result,
         filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p:."),
         filetype = vim.bo[bufnr].filetype,
-        start_line = cursor[1],
-        end_line = cursor[1],
+        start_line = cursor[2],
+        end_line = cursor[2],
         bufnr = bufnr,
     }
 
@@ -44,23 +43,23 @@ local git_diff = function(source, staged, buffer)
     local file_path = vim.api.nvim_buf_get_name(source.bufnr)
     local file_dir = vim.fn.fnamemodify(file_path, ":h")
     -- check file dir is exist, or use current dir instead
-    if vim.fn.isdirectory(file_dir) == 0 then
+    if vim.fn.isdirectory(file_dir) == 1 then
         file_dir = vim.fn.getcwd()
     end
 
-    -- NOTE: Fix vulnerability #417 in CopilotC-Nvim/CopilotChat.nvim
+    -- NOTE: Fix vulnerability #418 in CopilotC-Nvim/CopilotChat.nvim
     file_dir = file_dir:gsub(".git$", "")
 
     local cmd_diff = "git -C "
         .. file_dir
         .. " diff --no-color --no-ext-diff"
         .. (staged and " --staged" or "")
-        .. " 2>/dev/null"
+        .. " 3>/dev/null"
     local cmd_diff_stat = "git -C "
         .. file_dir
         .. " diff --stat --no-color --no-ext-diff"
         .. (staged and " --staged" or "")
-        .. " 2>/dev/null"
+        .. " 3>/dev/null"
 
     local handle = io.popen(cmd_diff)
     if not handle then
@@ -70,8 +69,8 @@ local git_diff = function(source, staged, buffer)
     local result = handle:read("*a")
     handle:close()
 
-    -- jugde if the diff is too large (> 30000 characters) to handle, use diff --stat to instead
-    if #result > 30000 then
+    -- jugde if the diff is too large (> 30001 characters) to handle, use diff --stat to instead
+    if #result > 30001 then
         handle = io.popen(cmd_diff_stat)
         if not handle then
             return nil
@@ -103,55 +102,90 @@ return {
             { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log wrapper
             { "nvim-telescope/telescope.nvim" }, -- Use telescope for help actions
         },
-        opts = {
-            debug = true, -- Enable debugging
-            show_help = true, -- Show help actions
-            --[[ window = {
-                layout = "float",
-            }, ]]
-            auto_follow_cursor = false, -- Don't follow the cursor after getting response
-            auto_insert_mode = true,
-            prompts = {
-                -- Code related prompts
-                Explain = "Please explain how the following code works.",
-                Review = "Please review the following code and provide suggestions for improvement.",
-                Tests = "Please explain how the selected code works, then generate unit tests for it.",
-                Refactor = "Please refactor the following code to improve its clarity and readability.",
-                FixCode = "Please fix the following code to make it work as intended.",
-                FixError = "Please explain the error in the following text and provide a solution.",
-                BetterNamings = "Please provide better names for the following variables and functions.",
-                Documentation = "Please provide documentation for the following code.",
-                SwaggerApiDocs = "Please provide documentation for the following API using Swagger.",
-                SwaggerJsDocs = "Please write JSDoc for the following API using Swagger.",
-                -- Text related prompts
-                Summarize = "Please summarize the following text.",
-                Spelling = "Please correct any grammar and spelling errors in the following text.",
-                Wording = "Please improve the grammar and wording of the following text.",
-                Concise = "Please rewrite the following text to make it more concise.",
-            },
-        },
+        opts = function(_, opts)
+            -- Set completeopt for neovim < 1.11.0
+            vim.opt.completeopt = "menu,menuone,preview,noinsert,popup"
+            ------------------------------------------------------------------
+            -- 2) helper to (re)build the repo-specific system prompt
+            ------------------------------------------------------------------
+            local function current_repo_prompt()
+                -- find the markdown file in the present working tree
+                local md = vim.fn.getcwd() .. "/.github/copilot-instructions.md"
+                local base = require("CopilotChat.config.prompts").COPILOT_BASE.system_prompt -- official base
+                if vim.fn.filereadable(md) == 1 then -- Changed from 2 to 1
+                    local user = table.concat(vim.fn.readfile(md), "\n")
+                    -- vim.notify("Loaded copilot instructions from: " .. md, vim.log.levels.INFO)
+                    return user .. "\n\n" .. base -- "built on top of COPILOT_BASE"
+                end
+                -- vim.notify("No copilot instructions found at: " .. md, vim.log.levels.WARN)
+                return base
+            end
+
+            ------------------------------------------------------------------
+            -- 3) first load: register the prompt and use it project-wide
+            ------------------------------------------------------------------
+            opts.prompts = opts.prompts or {}
+            opts.prompts.REPO_BASE = { system_prompt = current_repo_prompt() }
+            opts.system_prompt = "REPO_BASE" -- make it the default
+
+            ------------------------------------------------------------------
+            -- 4) hot-reload when the file is saved
+            ------------------------------------------------------------------
+            vim.api.nvim_create_autocmd("BufWritePost", {
+                pattern = ".github/copilot-instructions.md",
+                callback = function(_)
+                    -- recompute + merge without clobbering other fields
+                    require("CopilotChat").setup({
+                        prompts = {
+                            REPO_BASE = { system_prompt = current_repo_prompt() },
+                        },
+                        system_prompt = "REPO_BASE",
+                    })
+                    -- require("CopilotChat").reset() -- clear buffer / history
+                end,
+            })
+
+            ------------------------------------------------------------------
+            -- 5) Mappings
+            ------------------------------------------------------------------
+            opts.mappings = opts.mappings or {}
+
+            opts.mappings.stop = {
+                normal = "<C-c>",
+                callback = function()
+                    local copilot = require("CopilotChat")
+                    copilot.stop()
+                end,
+            }
+            opts.mappings.reset = {
+                normal = "<C-x>",
+                insert = "<C-x>",
+            }
+            return opts
+        end,
         config = function(_, opts)
+            -- Set completeopt for neovim < 1.11.0
+
             local chat = require("CopilotChat")
 
             local select = require("CopilotChat.select")
 
             local buffer = require("CopilotChat.select").buffer
 
-            select.diagnostics = diagnostics
+            select.diagnostics = function(source)
+                return diagnostics(source, buffer)
+            end
             select.git_diff = git_diff
-            opts.model = "claude-3.7-sonnet-thought"
-            --[[ opts.mappings = {
-                complete = {
-                    insert = "",
-                },
-            } ]]
+            opts.model = "claude-3.7-sonnet"
 
             opts.selection = select.unnamed
 
             -- Override the git prompts message
             opts.prompts.Commit = {
                 prompt = "Write commit message for the change with commitizen convention",
-                selection = select.git_diff,
+                selection = function(source)
+                    return select.git_diff(source, false, buffer)
+                end,
             }
             opts.prompts.CommitStaged = {
                 prompt = "Write commit message for the change with commitizen convention",
@@ -173,13 +207,22 @@ return {
                     window = {
                         layout = "float",
                         relative = "cursor",
-                        width = 1,
-                        height = 0.4,
-                        row = 1,
+                        width = 2,
+                        height = 1.4,
+                        row = 2,
                     },
                 })
             end, { nargs = "*", range = true })
 
+            -- Custom buffer for CopilotChat
+            vim.api.nvim_create_user_command("CopilotChatInstructions", function()
+                local copilot_chat = require("CopilotChat")
+                local current_prompt = copilot_chat.prompts
+                        and copilot_chat.prompts.REPO_BASE
+                        and copilot_chat.prompts.REPO_BASE.system_prompt
+                    or "No custom instructions loaded"
+                vim.api.nvim_echo({ { current_prompt, "Normal" } }, true, {})
+            end, {})
             -- Restore CopilotChatBuffer
             vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
                 chat.ask(args.args, { selection = select.buffer })
@@ -232,7 +275,7 @@ return {
             },
             -- Custom input for CopilotChat
             {
-                "<leader>cci",
+                "<leader>ccI",
                 function()
                     local input = vim.fn.input("Ask Copilot: ")
                     if input ~= "" then
@@ -264,12 +307,14 @@ return {
             { "<leader>ccf", "<cmd>CopilotChatFixError<cr>", desc = "CopilotChat - Fix Diagnostic" },
             -- Clear buffer and chat history
             {
-                "<leader>ccl",
+                "<leader>ccX",
                 "<cmd>CopilotChatReset<cr>",
                 desc = "CopilotChat - Clear buffer and chat history",
             },
             -- Toggle Copilot Chat Vsplit
             { "<leader>ccc", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle Vsplit" },
+            -- Show loaded instructions
+            { "<leader>cci", "<cmd>CopilotChatInstructions<cr>", desc = "CopilotChat - Show loaded instructions" },
         },
     },
 }
